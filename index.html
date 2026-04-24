@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mon rapport à l'argent — Activité Module 2</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #ffffff;
+      --bg2:          #f7f6f3;
+      --bg3:          #f0ede8;
+      --text:         #1a1a18;
+      --text2:        #5a5a56;
+      --text3:        #909088;
+      --border:       rgba(0,0,0,0.12);
+      --border2:      rgba(0,0,0,0.22);
+      --radius-md:    8px;
+      --radius-lg:    12px;
+      --purple:       #534AB7;
+      --purple-light: #EEEDFE;
+      --purple-dark:  #3C3489;
+      --purple-text:  #3C3489;
+      --teal:         #1D9E75;
+      --teal-light:   #E1F5EE;
+      --teal-dark:    #085041;
+      --teal-mid:     #0F6E56;
+      --amber:        #BA7517;
+      --amber-light:  #FAEEDA;
+      --amber-dark:   #633806;
+      --amber-mid:    #854F0B;
+      --red:          #E24B4A;
+      --red-light:    #FCEBEB;
+      --red-dark:     #501313;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg:           #1e1e1c;
+        --bg2:          #272725;
+        --bg3:          #2e2e2b;
+        --text:         #f0ede8;
+        --text2:        #b0afa8;
+        --text3:        #707068;
+        --border:       rgba(255,255,255,0.12);
+        --border2:      rgba(255,255,255,0.22);
+        --purple-light: #26215C;
+        --purple-text:  #AFA9EC;
+        --teal-light:   #04342C;
+        --amber-light:  #412402;
+        --red-light:    #501313;
+      }
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      background: var(--bg3);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .outer { max-width: 680px; margin: 0 auto; }
+
+    .header { text-align: center; margin-bottom: 2rem; }
+    .header h1 { font-size: 22px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
+    .header p { font-size: 14px; color: var(--text2); }
+
+    .stepper {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 1.5rem;
+      background: var(--bg);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: .875rem 1rem;
+    }
+    .sdot { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; }
+    .sdot-c {
+      width: 26px; height: 26px; border-radius: 50%;
+      border: 0.5px solid var(--border2);
+      background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 500; color: var(--text2);
+      transition: all .2s;
+    }
+    .sdot.active .sdot-c { background: var(--purple); border-color: var(--purple); color: #fff; }
+    .sdot.done .sdot-c   { background: var(--teal);   border-color: var(--teal);   color: #fff; }
+    .sdot-lbl { font-size: 10px; color: var(--text3); text-align: center; max-width: 68px; line-height: 1.3; }
+    .sdot.active .sdot-lbl { color: var(--purple); font-weight: 500; }
+    .sdot.done .sdot-lbl   { color: var(--teal); }
+    .sline { flex: 1; height: 1px; background: var(--border); margin-top: 13px; }
+    .sline.done { background: var(--teal); }
+
+    .card {
+      background: var(--bg);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.25rem;
+      margin-bottom: 12px;
+    }
+
+    .step-badge {
+      display: inline-block;
+      padding: 3px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500;
+      background: var(--purple-light);
+      color: var(--purple-text);
+      margin-bottom: 10px;
+    }
+    .stitle { font-size: 17px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+    .ssub   { font-size: 13px; color: var(--text2); margin-bottom: 1.25rem; line-height: 1.6; }
+
+    label.flbl { font-size: 13px; color: var(--text2); margin-bottom: 5px; font-weight: 500; display: block; }
+    .fsub { font-size: 12px; color: var(--text3); margin-bottom: 7px; line-height: 1.5; }
+
+    textarea {
+      width: 100%; font-size: 14px;
+      font-family: inherit; color: var(--text);
+      background: var(--bg);
+      border: 0.5px solid var(--border2);
+      border-radius: var(--radius-md);
+      padding: 9px 12px; outline: none;
+      resize: vertical; min-height: 80px; line-height: 1.6;
+      transition: border-color .15s;
+    }
+    textarea:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(83,74,183,.12); }
+
+    .chip-group { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 4px; }
+    .chip {
+      padding: 6px 14px; border-radius: 20px;
+      border: 0.5px solid var(--border2);
+      font-size: 13px; cursor: pointer;
+      color: var(--text2); background: var(--bg);
+      transition: all .15s; font-family: inherit; user-select: none;
+    }
+    .chip:hover { border-color: var(--purple); }
+    .chip.on { background: var(--purple-light); border-color: var(--purple); color: var(--purple-text); font-weight: 500; }
+
+    .scale-row  { display: flex; flex-direction: column; gap: 10px; margin-bottom: 4px; }
+    .scale-item { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .scale-label { font-size: 13px; color: var(--text); min-width: 200px; flex: 1; line-height: 1.4; }
+    .scale-btns  { display: flex; gap: 4px; }
+    .scale-btn {
+      padding: 5px 12px;
+      border-radius: var(--radius-md);
+      border: 0.5px solid var(--border2);
+      background: var(--bg);
+      font-size: 12px; font-weight: 500;
+      cursor: pointer; color: var(--text2);
+      font-family: inherit; transition: all .15s;
+    }
+    .scale-btn:hover { border-color: var(--border-primary); }
+    .scale-btn.sel-1 { background: var(--teal-light);  border-color: var(--teal);  color: var(--teal-dark); }
+    .scale-btn.sel-2 { background: var(--amber-light); border-color: var(--amber); color: var(--amber-dark); }
+    .scale-btn.sel-3 { background: var(--red-light);   border-color: var(--red);   color: var(--red-dark); }
+
+    .scale-legend { display: flex; gap: 16px; margin-top: 6px; flex-wrap: wrap; }
+    .leg-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text3); }
+    .leg-dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+    .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag {
+      padding: 6px 14px; border-radius: 20px;
+      font-size: 13px; border: 0.5px solid var(--border2);
+      cursor: pointer; color: var(--text2); background: var(--bg);
+      transition: all .15s; font-family: inherit;
+    }
+    .tag:hover { border-color: var(--purple); }
+    .tag.on { background: var(--purple-light); border-color: var(--purple); color: var(--purple-text); font-weight: 500; }
+    .tag.pos.on { background: var(--teal-light);  border-color: var(--teal);  color: var(--teal-dark); }
+    .tag.neg.on { background: var(--red-light);   border-color: var(--red);   color: var(--red-dark); }
+
+    .prio-list { display: flex; flex-direction: column; gap: 8px; }
+    .prio-item {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--bg2);
+      border-radius: var(--radius-md);
+      padding: 9px 12px; cursor: grab;
+      user-select: none;
+      border: 0.5px solid var(--border);
+      transition: all .15s;
+    }
+    .prio-item:active { cursor: grabbing; opacity: .8; }
+    .prio-item.drag-over { border-color: var(--purple); background: var(--purple-light); }
+    .prio-rank {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--purple); color: #fff;
+      font-size: 11px; font-weight: 500;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .prio-text   { font-size: 13px; color: var(--text); flex: 1; }
+    .prio-handle { font-size: 16px; color: var(--text3); }
+
+    .meter-row  { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .meter-name { font-size: 13px; color: var(--text); min-width: 180px; }
+    .meter-bg   { flex: 1; height: 6px; background: var(--bg2); border-radius: 3px; overflow: hidden; }
+    .meter-fill { height: 6px; border-radius: 3px; transition: width .6s ease; }
+    .meter-pct  { font-size: 12px; color: var(--text3); min-width: 32px; text-align: right; }
+
+    .insight-card { border-radius: var(--radius-md); padding: .875rem 1rem; margin-bottom: 10px; }
+    .ic-teal   { background: var(--teal-light);  border: 0.5px solid var(--teal); }
+    .ic-purple { background: var(--purple-light); border: 0.5px solid var(--purple); }
+    .ic-amber  { background: var(--amber-light);  border: 0.5px solid var(--amber); }
+    .ic-neutral{ background: var(--bg2); border: 0.5px solid var(--border); }
+    .ic-teal   .i-title { font-size: 13px; font-weight: 500; color: var(--teal-dark);  margin-bottom: 4px; }
+    .ic-purple .i-title { font-size: 13px; font-weight: 500; color: var(--purple-dark); margin-bottom: 4px; }
+    .ic-amber  .i-title { font-size: 13px; font-weight: 500; color: var(--amber-dark);  margin-bottom: 4px; }
+    .ic-neutral .i-title{ font-size: 13px; font-weight: 500; color: var(--text);         margin-bottom: 4px; }
+    .ic-teal   .i-text  { font-size: 13px; color: var(--teal-mid);    line-height: 1.6; }
+    .ic-purple .i-text  { font-size: 13px; color: var(--purple);      line-height: 1.6; }
+    .ic-amber  .i-text  { font-size: 13px; color: var(--amber-mid);   line-height: 1.6; }
+    .ic-neutral .i-text { font-size: 13px; color: var(--text2);       line-height: 1.6; }
+
+    .navrow { display: flex; justify-content: space-between; margin-top: 1.5rem; gap: 10px; }
+    .bsec {
+      background: transparent; border: 0.5px solid var(--border2);
+      border-radius: var(--radius-md); padding: 9px 20px;
+      font-size: 14px; cursor: pointer; color: var(--text);
+      font-family: inherit; transition: background .15s;
+    }
+    .bsec:hover { background: var(--bg2); }
+    .bsec:disabled { opacity: .3; cursor: default; }
+    .bprim {
+      background: var(--purple); border: none;
+      border-radius: var(--radius-md); padding: 9px 22px;
+      font-size: 14px; font-weight: 500; color: #fff;
+      cursor: pointer; font-family: inherit; transition: background .15s;
+    }
+    .bprim:hover { background: var(--purple-dark); }
+
+    .divider { border: none; border-top: 0.5px solid var(--border); margin: .9rem 0; }
+    .rlbl { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 3px; }
+    .rval { font-size: 14px; color: var(--text); line-height: 1.6; margin-bottom: 10px; }
+
+    .portrait-meta { font-size: 12px; color: var(--text3); margin-bottom: 1rem; }
+    .portrait-title { font-size: 16px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+
+    @media (max-width: 520px) {
+      .scale-label { min-width: 100%; }
+      .meter-name  { min-width: 120px; font-size: 12px; }
+      body { padding: 1rem .75rem; }
+      .scale-btn { padding: 5px 9px; font-size: 11px; }
+    }
+
+    @media print {
+      body { background: white; padding: 0; }
+      .header p, .navrow, .stepper, .chip, .scale-btn,
+      .tag, .prio-handle, .prio-item { cursor: default; }
+      .navrow { display: none !important; }
+      .card { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+<div class="outer">
+
+  <div class="header">
+    <h1>Mon rapport à l'argent</h1>
+    <p>Activité de réflexion — Module 2 · 5 étapes · environ 15 minutes</p>
+  </div>
+
+  <div class="stepper" id="stepper"></div>
+  <div id="screen"></div>
+
+</div>
+<script>
+const STEPS = ["Origines", "Croyances", "Réactions", "Priorités", "Mon portrait"];
+
+const MESSAGES_FAMILLE = [
+  "L'argent ne pousse pas dans les arbres",
+  "On ne parle pas d'argent",
+  "Il faut travailler dur pour en avoir",
+  "L'argent ne fait pas le bonheur",
+  "Il faut économiser pour les jours difficiles",
+  "L'argent corrompt",
+  "Avec de l'argent, tout est possible",
+  "On s'en sort toujours"
+];
+
+const CROYANCES = [
+  "L'argent, c'est compliqué",
+  "Je ne suis pas fait(e) pour gérer l'argent",
+  "Parler d'argent, c'est vulgaire",
+  "L'argent ne fait pas le bonheur",
+  "Avoir de l'argent, c'est égoïste",
+  "Il faut travailler dur pour mériter l'argent",
+  "L'argent est une source de conflits",
+  "Je n'en aurai jamais assez",
+  "Les riches sont des gens sans scrupules",
+  "L'argent, ça va ça vient"
+];
+
+const REACTIONS = [
+  { label: "J'évite d'ouvrir mes relevés bancaires",                          group: 1 },
+  { label: "Je dépense parfois impulsivement",                                group: 2 },
+  { label: "Je vérifie mes comptes très souvent",                             group: 3 },
+  { label: "J'ai du mal à fixer mon prix ou négocier mon salaire",            group: 1 },
+  { label: "Je prête facilement, même si je ne peux pas me le permettre",    group: 2 },
+  { label: "Je reporte les décisions financières importantes",                group: 1 },
+  { label: "Je me sens coupable de dépenser pour moi",                       group: 1 },
+  { label: "Je ressens de l'anxiété quand je pense à la retraite",           group: 1 },
+  { label: "Je contrôle le budget de façon très stricte",                    group: 3 },
+  { label: "J'ai du mal à épargner régulièrement",                           group: 2 }
+];
+
+const EMOTIONS_POS = ["Sécurité", "Fierté", "Liberté", "Confiance", "Soulagement"];
+const EMOTIONS_NEG = ["Anxiété", "Honte", "Culpabilité", "Peur", "Méfiance"];
+const EMOTIONS_NEU = ["Indifférence", "Ambivalence"];
+const TOUTES_EMOTIONS = [...EMOTIONS_POS, ...EMOTIONS_NEG, ...EMOTIONS_NEU];
+
+const PRIORITES_INIT = [
+  "Sécurité et stabilité",
+  "Liberté et indépendance",
+  "Transmettre à mes proches",
+  "Profiter du présent",
+  "Préparer ma retraite sereinement",
+  "Avoir des revenus complémentaires",
+  "Réduire mon stress financier",
+  "Me sentir légitime avec l'argent"
+];
+
+const PROFILES_TENDANCE = {
+  evit: {
+    cls: "ic-teal",
+    title: "Tendance à l'évitement",
+    text: "Vous avez tendance à mettre de côté les sujets financiers pour éviter l'inconfort qu'ils génèrent. La première étape pour vous est de rendre l'argent moins menaçant : commencez par de petits gestes concrets et réguliers, sans pression de tout maîtriser d'un coup."
+  },
+  imp: {
+    cls: "ic-purple",
+    title: "Tendance à l'impulsivité",
+    text: "Vous réagissez souvent dans l'instant face à l'argent. Mettre en place des systèmes automatiques — virement d'épargne, budget prédéfini — vous libèrera de la pression de devoir décider chaque fois. La structure protège de l'impulsion."
+  },
+  ctrl: {
+    cls: "ic-amber",
+    title: "Tendance au contrôle",
+    text: "Vous êtes très attentif(ve) à votre argent, ce qui est une vraie force. Veillez simplement à ce que ce contrôle ne génère pas un niveau de stress contre-productif. Apprendre à tolérer une part d'incertitude fait partie d'une relation saine à l'argent."
+  },
+  neutre: {
+    cls: "ic-neutral",
+    title: "Profil équilibré",
+    text: "Vos réactions face à l'argent semblent relativement équilibrées entre les différentes tendances. Cela peut indiquer une bonne adaptabilité — ou que certains mécanismes restent encore à explorer. Les questions qui suivent vous aideront à affiner."
+  }
+};
+
+let step = 0;
+let dragIdx = null;
+
+let D = {
+  souvenir: "",
+  message_famille: "",
+  experience_marquante: "",
+  croyances: [],
+  croyance_forte: "",
+  reactions: {},
+  emotions: [],
+  priorites: [...PRIORITES_INIT],
+  intention: ""
+};
+
+/* ─── Helpers ─── */
+function esc(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function escPrompt(s) {
+  return (s || '').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,' ').replace(/\r/g,'');
+}
+
+function trunc(s, n) {
+  if (!s) return '';
+  return s.length > n ? s.substring(0, n) + '…' : s;
+}
+
+function getTendance() {
+  const g1 = REACTIONS.filter(r => r.group === 1);
+  const g2 = REACTIONS.filter(r => r.group === 2);
+  const g3 = REACTIONS.filter(r => r.group === 3);
+  const evitPct  = Math.round(REACTIONS.filter((_,i) => D.reactions[i]===3 && REACTIONS[i].group===1).length / g1.length * 100) || 0;
+  const impPct   = Math.round(REACTIONS.filter((_,i) => D.reactions[i]===3 && REACTIONS[i].group===2).length / g2.length * 100) || 0;
+  const ctrlPct  = Math.round(REACTIONS.filter((_,i) => D.reactions[i]===3 && REACTIONS[i].group===3).length / g3.length * 100) || 0;
+  const max = Math.max(evitPct, impPct, ctrlPct);
+  let key = max === 0 ? 'neutre' : evitPct >= impPct && evitPct >= ctrlPct ? 'evit' : impPct >= ctrlPct ? 'imp' : 'ctrl';
+  return { key, evitPct, impPct, ctrlPct };
+}
+
+/* ─── Stepper ─── */
+function renderStepper() {
+  const el = document.getElementById('stepper');
+  el.innerHTML = '';
+  STEPS.forEach((s, i) => {
+    const d = document.createElement('div');
+    d.className = 'sdot' + (i===step?' active':i<step?' done':'');
+    d.innerHTML = `<div class="sdot-c">${i<step?'✓':i+1}</div><div class="sdot-lbl">${s}</div>`;
+    if (i < step) d.onclick = () => { step=i; render(); };
+    el.appendChild(d);
+    if (i < STEPS.length-1) {
+      const l = document.createElement('div');
+      l.className = 'sline' + (i<step?' done':'');
+      el.appendChild(l);
+    }
+  });
+}
+
+function goStep(n) { step=n; render(); }
+
+/* ─── Step 0 : Origines ─── */
+function s0() {
+  return `
+  <div class="step-badge">Étape 1 — Origines</div>
+  <div class="stitle">D'où vient votre rapport à l'argent ?</div>
+  <div class="ssub">Avant de changer ses comportements financiers, il est utile de comprendre ce qui les a façonnés. Prenez le temps de répondre avec sincérité — il n'y a pas de bonne ou mauvaise réponse.</div>
+
+  <div class="card">
+    <label class="flbl">Un souvenir d'enfance lié à l'argent</label>
+    <div class="fsub">Quel est le premier souvenir qui vous vient quand vous pensez à l'argent dans votre enfance ? Une scène, une phrase entendue, une atmosphère…</div>
+    <textarea id="f-souvenir" placeholder="Ex. : Je me souviens que mes parents ne parlaient jamais d'argent à la maison. Quand j'en demandais, on me répondait que ça ne me regardait pas…">${esc(D.souvenir)}</textarea>
+  </div>
+
+  <div class="card">
+    <label class="flbl">Les messages reçus dans votre famille</label>
+    <div class="fsub">Quels messages, explicites ou implicites, votre famille vous a-t-elle transmis sur l'argent ? Sélectionnez celui qui résonne le plus.</div>
+    <div class="chip-group">
+      ${MESSAGES_FAMILLE.map((m,i) => `<div class="chip ${D.message_famille===m?'on':''}" onclick="selMsg(${i})">${m}</div>`).join('')}
+    </div>
+  </div>
+
+  <div class="card">
+    <label class="flbl">Une expérience personnelle marquante</label>
+    <div class="fsub">Y a-t-il un événement dans votre vie qui a profondément influencé votre rapport à l'argent ? (difficultés financières, héritage, perte d'emploi, divorce, succès inattendu…)</div>
+    <textarea id="f-exp" placeholder="Ex. : Quand j'avais 35 ans, j'ai traversé une période de chômage de 18 mois qui m'a laissé une peur profonde du manque…">${esc(D.experience_marquante)}</textarea>
+  </div>
+
+  <div class="navrow">
+    <button class="bsec" disabled>← Précédent</button>
+    <button class="bprim" onclick="save0()">Suivant →</button>
+  </div>`;
+}
+
+function selMsg(i) {
+  const m = MESSAGES_FAMILLE[i];
+  D.message_famille = D.message_famille === m ? '' : m;
+  renderScreen();
+}
+
+function save0() {
+  D.souvenir = document.getElementById('f-souvenir').value.trim();
+  D.experience_marquante = document.getElementById('f-exp').value.trim();
+  step=1; render();
+}
+
+/* ─── Step 1 : Croyances ─── */
+function s1() {
+  return `
+  <div class="step-badge">Étape 2 — Croyances</div>
+  <div class="stitle">Vos croyances autour de l'argent</div>
+  <div class="ssub">Les croyances limitantes agissent silencieusement sur nos décisions financières. Identifier les vôtres est le premier pas pour les dépasser.</div>
+
+  <div class="card">
+    <label class="flbl">Quelles affirmations résonnent en vous ?</label>
+    <div class="fsub">Sélectionnez toutes les croyances que vous reconnaissez chez vous, même partiellement.</div>
+    <div class="chip-group">
+      ${CROYANCES.map((c,i) => `<div class="chip ${D.croyances.includes(c)?'on':''}" onclick="togCroyance(${i})">${c}</div>`).join('')}
+    </div>
+  </div>
+
+  <div class="card">
+    <label class="flbl">La croyance qui vous freine le plus</label>
+    <div class="fsub">Parmi celles que vous avez identifiées — ou une autre que vous formuleriez vous-même — laquelle a le plus d'impact sur vos décisions financières au quotidien ? Comment se manifeste-t-elle concrètement dans votre vie ?</div>
+    <textarea id="f-croyance" placeholder="Ex. : Je crois profondément que l'argent, c'est compliqué et que ce n'est pas pour moi. Du coup, je remets toujours à plus tard les décisions importantes et je laisse les autres décider à ma place…">${esc(D.croyance_forte)}</textarea>
+  </div>
+
+  <div class="navrow">
+    <button class="bsec" onclick="goStep(0)">← Précédent</button>
+    <button class="bprim" onclick="save1()">Suivant →</button>
+  </div>`;
+}
+
+function togCroyance(i) {
+  const c = CROYANCES[i];
+  const idx = D.croyances.indexOf(c);
+  if (idx >= 0) D.croyances.splice(idx, 1); else D.croyances.push(c);
+  renderScreen();
+}
+
+function save1() {
+  D.croyance_forte = document.getElementById('f-croyance').value.trim();
+  step=2; render();
+}
+
+/* ─── Step 2 : Réactions ─── */
+function s2() {
+  const reactionItems = REACTIONS.map((r, i) => {
+    const v = D.reactions[i] || 0;
+    const btns = [
+      { val:1, lbl:"Rarement", cls:"sel-1" },
+      { val:2, lbl:"Parfois",  cls:"sel-2" },
+      { val:3, lbl:"Souvent",  cls:"sel-3" }
+    ].map(b => `<button class="scale-btn ${v===b.val?b.cls:''}" onclick="setReaction(${i},${b.val})">${b.lbl}</button>`).join('');
+    return `<div class="scale-item">
+      <div class="scale-label">${r.label}</div>
+      <div class="scale-btns">${btns}</div>
+    </div>`;
+  }).join('');
+
+  const emotionTags = TOUTES_EMOTIONS.map((e,i) => {
+    const isPos = EMOTIONS_POS.includes(e);
+    const isNeg = EMOTIONS_NEG.includes(e);
+    const on    = D.emotions.includes(e);
+    const extra = on ? (isPos ? ' pos' : isNeg ? ' neg' : '') : '';
+    return `<div class="tag${extra} ${on?'on':''}" onclick="togEmotion(${i})">${e}</div>`;
+  }).join('');
+
+  return `
+  <div class="step-badge">Étape 3 — Réactions</div>
+  <div class="stitle">Vos réactions habituelles face à l'argent</div>
+  <div class="ssub">Ces comportements sont souvent automatiques et inconscients. Les observer sans les juger est déjà un grand pas.</div>
+
+  <div class="card">
+    <label class="flbl">À quelle fréquence ces comportements vous concernent-ils ?</label>
+    <div class="scale-legend">
+      <div class="leg-item"><div class="leg-dot" style="background:var(--teal)"></div>Rarement</div>
+      <div class="leg-item"><div class="leg-dot" style="background:var(--amber)"></div>Parfois</div>
+      <div class="leg-item"><div class="leg-dot" style="background:var(--red)"></div>Souvent</div>
+    </div>
+    <div class="divider"></div>
+    <div class="scale-row">${reactionItems}</div>
+  </div>
+
+  <div class="card">
+    <label class="flbl">Les émotions que l'argent suscite en vous</label>
+    <div class="fsub">Sélectionnez toutes les émotions que vous ressentez régulièrement quand il est question d'argent.</div>
+    <div class="tag-cloud">${emotionTags}</div>
+  </div>
+
+  <div class="navrow">
+    <button class="bsec" onclick="goStep(1)">← Précédent</button>
+    <button class="bprim" onclick="goStep(3)">Suivant →</button>
+  </div>`;
+}
+
+function setReaction(i, v) {
+  D.reactions[i] = D.reactions[i] === v ? 0 : v;
+  renderScreen();
+}
+
+function togEmotion(i) {
+  const e = TOUTES_EMOTIONS[i];
+  const idx = D.emotions.indexOf(e);
+  if (idx >= 0) D.emotions.splice(idx, 1); else D.emotions.push(e);
+  renderScreen();
+}
+
+/* ─── Step 3 : Priorités ─── */
+function s3() {
+  const items = D.priorites.map((p, i) => `
+    <div class="prio-item" id="pi-${i}" draggable="true"
+      ondragstart="dragStart(event,${i})"
+      ondragover="dragOver(event,${i})"
+      ondragleave="dragLeave(${i})"
+      ondrop="dragDrop(event,${i})"
+      ondragend="dragEnd()">
+      <div class="prio-rank">${i+1}</div>
+      <div class="prio-text">${p}</div>
+      <div class="prio-handle">⠿</div>
+    </div>`).join('');
+
+  return `
+  <div class="step-badge">Étape 4 — Priorités</div>
+  <div class="stitle">Ce qui compte vraiment pour vous</div>
+  <div class="ssub">Glissez-déposez ces éléments pour les classer par ordre d'importance. Votre classement révèle vos vraies motivations financières — celles qui guideront votre stratégie.</div>
+
+  <div class="card">
+    <label class="flbl">Classez du plus important au moins important</label>
+    <div class="fsub">Faites glisser chaque élément pour l'ordonner selon vos vraies priorités.</div>
+    <div class="prio-list" id="prio-list">${items}</div>
+  </div>
+
+  <div class="card">
+    <label class="flbl">Mon intention concrète</label>
+    <div class="fsub">Au regard de ce que vous venez d'explorer sur votre rapport à l'argent, quelle est la première chose concrète que vous souhaitez changer ou mettre en place dans les prochaines semaines ?</div>
+    <textarea id="f-intention" placeholder="Ex. : Je vais enfin regarder en face le montant de ma future retraite. Et mettre en place un virement automatique de 200 € par mois sur mon assurance-vie.">${esc(D.intention)}</textarea>
+  </div>
+
+  <div class="navrow">
+    <button class="bsec" onclick="goStep(2)">← Précédent</button>
+    <button class="bprim" onclick="save3()">Voir mon portrait →</button>
+  </div>`;
+}
+
+function dragStart(e, i) {
+  dragIdx = i;
+  e.dataTransfer.effectAllowed = 'move';
+  setTimeout(() => {
+    const el = document.getElementById('pi-'+i);
+    if (el) el.style.opacity = '0.5';
+  }, 0);
+}
+
+function dragOver(e, i) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  document.querySelectorAll('.prio-item').forEach(el => el.classList.remove('drag-over'));
+  const el = document.getElementById('pi-'+i);
+  if (el && dragIdx !== i) el.classList.add('drag-over');
+}
+
+function dragLeave(i) {
+  const el = document.getElementById('pi-'+i);
+  if (el) el.classList.remove('drag-over');
+}
+
+function dragEnd() {
+  document.querySelectorAll('.prio-item').forEach(el => {
+    el.classList.remove('drag-over');
+    el.style.opacity = '1';
+  });
+  dragIdx = null;
+}
+
+function dragDrop(e, i) {
+  e.preventDefault();
+  if (dragIdx === null || dragIdx === i) { dragEnd(); return; }
+  const arr = [...D.priorites];
+  const moved = arr.splice(dragIdx, 1)[0];
+  arr.splice(i, 0, moved);
+  D.priorites = arr;
+  dragEnd();
+  renderScreen();
+}
+
+function save3() {
+  D.intention = document.getElementById('f-intention').value.trim();
+  step=4; render();
+}
+
+/* ─── Step 4 : Portrait ─── */
+function s4() {
+  const today = new Date().toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' });
+  const { key, evitPct, impPct, ctrlPct } = getTendance();
+  const profil = PROFILES_TENDANCE[key];
+  const top3 = D.priorites.slice(0, 3);
+  const emotionsPos = D.emotions.filter(e => EMOTIONS_POS.includes(e));
+  const emotionsNeg = D.emotions.filter(e => EMOTIONS_NEG.includes(e));
+  const emotionsNeu = D.emotions.filter(e => EMOTIONS_NEU.includes(e));
+
+  const promptTxt = escPrompt(
+    `Voici mon portrait rapport à l'argent :\n` +
+    `Souvenir d'enfance : ${D.souvenir || 'non renseigné'}\n` +
+    `Message familial : ${D.message_famille || 'non renseigné'}\n` +
+    `Expérience marquante : ${D.experience_marquante || 'non renseignée'}\n` +
+    `Croyances identifiées : ${D.croyances.join(', ') || 'aucune'}\n` +
+    `Croyance la plus limitante : ${D.croyance_forte || 'non renseignée'}\n` +
+    `Émotions ressenties : ${D.emotions.join(', ') || 'aucune'}\n` +
+    `Tendance dominante : ${profil.title}\n` +
+    `Top 3 priorités : ${top3.join(', ')}\n` +
+    `Intention concrète : ${D.intention || 'non renseignée'}\n` +
+    `Sur la base de ce portrait, peux-tu m'aider à identifier mes principaux blocages et me donner 3 pistes concrètes pour travailler mon rapport à l'argent ?`
+  );
+
+  return `
+  <div class="card">
+    <div class="portrait-title">Mon portrait — rapport à l'argent</div>
+    <div class="portrait-meta">Activité complétée · Module 2 · ${today}</div>
+
+    <div class="rlbl">Origines de mon rapport à l'argent</div>
+    ${D.message_famille ? `<div class="rval">Message familial reçu : <em>"${esc(D.message_famille)}"</em></div>` : ''}
+    ${D.souvenir ? `<div class="rval">${esc(trunc(D.souvenir, 160))}</div>` : ''}
+    ${D.experience_marquante ? `<div class="rval">${esc(trunc(D.experience_marquante, 160))}</div>` : ''}
+    ${!D.message_famille && !D.souvenir && !D.experience_marquante ? `<div class="rval" style="color:var(--text3)">Non renseigné</div>` : ''}
+
+    <div class="divider"></div>
+
+    <div class="rlbl">Croyances identifiées (${D.croyances.length})</div>
+    <div class="chip-group" style="margin-bottom:10px">
+      ${D.croyances.length > 0
+        ? D.croyances.map(c => `<div class="chip on" style="cursor:default">${esc(c)}</div>`).join('')
+        : `<div style="font-size:13px;color:var(--text3)">Aucune sélectionnée</div>`}
+    </div>
+    ${D.croyance_forte
+      ? `<div class="insight-card ic-neutral"><div class="i-title">Croyance la plus limitante</div><div class="i-text">${esc(trunc(D.croyance_forte, 200))}</div></div>`
+      : ''}
+
+    <div class="divider"></div>
+
+    <div class="rlbl">Émotions associées à l'argent</div>
+    ${emotionsPos.length > 0 ? `
+      <div style="font-size:12px;color:var(--text3);margin-bottom:5px">Positives</div>
+      <div class="chip-group" style="margin-bottom:8px">
+        ${emotionsPos.map(e => `<div class="chip on" style="cursor:default;background:var(--teal-light);border-color:var(--teal);color:var(--teal-dark)">${e}</div>`).join('')}
+      </div>` : ''}
+    ${emotionsNeg.length > 0 ? `
+      <div style="font-size:12px;color:var(--text3);margin-bottom:5px">À travailler</div>
+      <div class="chip-group" style="margin-bottom:8px">
+        ${emotionsNeg.map(e => `<div class="chip on" style="cursor:default;background:var(--red-light);border-color:var(--red);color:var(--red-dark)">${e}</div>`).join('')}
+      </div>` : ''}
+    ${emotionsNeu.length > 0 ? `
+      <div class="chip-group" style="margin-bottom:8px">
+        ${emotionsNeu.map(e => `<div class="chip on" style="cursor:default">${e}</div>`).join('')}
+      </div>` : ''}
+    ${D.emotions.length === 0 ? `<div style="font-size:13px;color:var(--text3);margin-bottom:10px">Aucune sélectionnée</div>` : ''}
+
+    <div class="divider"></div>
+
+    <div class="rlbl">Tendance comportementale dominante</div>
+    <div class="insight-card ${profil.cls}" style="margin-bottom:12px">
+      <div class="i-title">${profil.title}</div>
+      <div class="i-text">${profil.text}</div>
+    </div>
+
+    <div class="rlbl">Répartition des comportements</div>
+    <div class="meter-row">
+      <div class="meter-name">Évitement / blocage</div>
+      <div class="meter-bg"><div class="meter-fill" style="width:${evitPct}%;background:var(--teal)"></div></div>
+      <div class="meter-pct">${evitPct} %</div>
+    </div>
+    <div class="meter-row">
+      <div class="meter-name">Impulsivité / générosité</div>
+      <div class="meter-bg"><div class="meter-fill" style="width:${impPct}%;background:var(--purple)"></div></div>
+      <div class="meter-pct">${impPct} %</div>
+    </div>
+    <div class="meter-row" style="margin-bottom:12px">
+      <div class="meter-name">Contrôle / rigidité</div>
+      <div class="meter-bg"><div class="meter-fill" style="width:${ctrlPct}%;background:var(--amber)"></div></div>
+      <div class="meter-pct">${ctrlPct} %</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="rlbl">Mes 3 priorités financières</div>
+    <div class="prio-list" style="margin-bottom:12px">
+      ${top3.map((p, i) => `
+        <div class="prio-item" style="cursor:default">
+          <div class="prio-rank">${i+1}</div>
+          <div class="prio-text">${esc(p)}</div>
+        </div>`).join('')}
+    </div>
+
+    ${D.intention ? `
+    <div class="divider"></div>
+    <div class="rlbl">Mon intention concrète</div>
+    <div class="insight-card ic-neutral">
+      <div class="i-text" style="font-style:italic">"${esc(D.intention)}"</div>
+    </div>` : ''}
+  </div>
+
+  <div class="navrow">
+    <button class="bsec" onclick="goStep(3)">← Modifier</button>
+    <button class="bprim" onclick="window.print()">Sauvegarder mon portrait</button>
+  </div>`;
+}
+
+/* ─── Render ─── */
+function renderScreen() {
+  const fns = [s0, s1, s2, s3, s4];
+  document.getElementById('screen').innerHTML = fns[step]();
+}
+
+function render() { renderStepper(); renderScreen(); }
+render();
+</script>
+</body>
+</html>
